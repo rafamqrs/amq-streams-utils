@@ -52,3 +52,7 @@ ssl.keystore.password=passphrase
 ```shell
 ./bin/kafka-topics.sh --bootstrap-server=localhost:9092 --list
 ```
+Show topic details 
+```shell
+ ./bin/kafka-topics.sh --bootstrap-server=localhost:9092 --describe --topic users.registrations
+```
