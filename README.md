@@ -22,3 +22,33 @@ Understanding each describe group:
 |CONSUMER-ID   |An optional identifier of a Kafka consumer (in a consumer group) that is passed to a Kafka broker with every request|
 |HOST          | Is the host           |
 |CLIENT-ID     | An optional identifier of a Kafka consumer (in a consumer group) that is passed to a Kafka broker with every request      |
+
+## Kafka Producer
+There are two option that I can show you: 
+1. First is the from the AMQ Streams/Kafka package:
+Create file ssl-perf-test.properties with the content below
+```console
+security.protocol=SSL
+ssl.truststore.location=/path/to/your/kafka.client.truststore.jks
+ssl.keystore.location=/path/to/your/kafka.client.keystore.jks
+ssl.truststore.password=your_SSL_certificate_passphrase
+ssl.keystore.password=passphrase
+```
+2. Run the kafka-producer-perf-test.sh
+```shell
+  bin/kafka-producer-perf-test.sh \
+  --topic <topic_name> \
+  --throughput -1 \
+  --num-records 3000000 \
+  --record-size 1024 \
+  --producer-props acks=all bootstrap.servers=broker0:9093,broker1:9093,broker2:9093 \
+  --producer.config /path/to/ssl-perf-test.properties
+```
+
+## Kafka Consumer
+
+
+## List Topics
+```shell
+./bin/kafka-topics.sh --bootstrap-server=localhost:9092 --list
+```
