@@ -56,3 +56,8 @@ Show topic details
 ```shell
  ./bin/kafka-topics.sh --bootstrap-server=localhost:9092 --describe --topic users.registrations
 ```
+In Openshift
+```shell
+oc run kafka-consumer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-27-rhel7:1.7.0 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server cluster-name-kafka-bootstrap:9092 --topic my-topic --from-beginning
+```
+
