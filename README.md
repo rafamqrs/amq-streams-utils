@@ -61,3 +61,49 @@ In Openshift
 oc run kafka-consumer -ti --image=registry.redhat.io/amq7/amq-streams-kafka-27-rhel7:1.7.0 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server cluster-name-kafka-bootstrap:9092 --topic my-topic --from-beginning
 ```
 
+## SASL SCRAM-SHA-512
+### To configure Kafka Connect to use SASL-based SCRAM-SHA-512 authentication, set the type property to scram-sha-512. This authentication mechanism requires a username and password.
+1. Create a KafkaUser with SCRAM_SHA auth
+```shell
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaUser
+metadata:
+  name: user-sample
+  labels:
+    strimzi.io/cluster: my-kafka-cluster
+spec:
+  authentication:
+    type: scram-sha-512
+```
+2. It will create a secret that contains the password in base64, e.g:
+```yaml
+apiVersion: v1
+kind: Secret
+name: kafka-scram-client-credentials
+data:
+  password: SnpteEQwek1DNkdi
+```
+3. Downloadinf the password, ca and user.p12:
+```shell
+oc get secret user-sample -o jsonpath='{.data.password}' | base64 --decode > user.password
+oc get secret <kafka-cluster>-cluster-ca-cert -n kafka -o jsonpath='{.data.ca\.crt}' | base64 --decode > ca.crt
+oc get secret <kafka-cluster>-cluster-ca-cert -n kafka -o jsonpath='{.data.ca\.password}' | base64 --decode > ca.password
+```
+4. Creating th trustore
+```shell
+keytool -keystore kafka.client.truststore.jks -alias CARoot -import -file ca.cert 
+```
+It will generate a file *kafka.client.truststore.jks*
+5. Now you can create a file call client.properties with the content bellow, I should replace the values with <REPLACE_ME>
+```yaml
+bootstrap.servers=[replace with public-ip:9094]
+security.protocol=SASL_SSL
+sasl.mechanism=SCRAM-SHA-512
+ssl.truststore.location=<REPLACE_ME_WITH_TRUSTORE.jks>
+ssl.truststore.password=<REPLACE_ME_WITH_TRUSTORE_PASSWORD>
+sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="<REPLACE_ME_USER>" password="<REPLACE_ME_USER_PASSWORD"
+```
+5. Testing with the kafka cli
+```shell
+./kafka-console-consumer.sh --bootstrap-server <BOOTSTRAP_SERVER_URL>:443 --topic <TOPIC_NAME> --property print.timestamp=true --property print.key=true --consumer.config client.properties
+```
