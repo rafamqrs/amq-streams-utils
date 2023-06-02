@@ -107,3 +107,16 @@ sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule require
 ```shell
 ./kafka-console-consumer.sh --bootstrap-server <BOOTSTRAP_SERVER_URL>:443 --topic <TOPIC_NAME> --property print.timestamp=true --property print.key=true --consumer.config client.properties
 ```
+
+Other example is using the cli directly with the properties
+```shell
+bin/kafka-console-producer.sh \
+--bootstrap-server <BOOTSTRAP_SERVER>:443 \
+--producer-property ssl.truststore.password=password \
+--producer-property ssl.truststore.location=truststore.jks \
+--producer-property security.protocol=SASL_SSL \
+--producer-property sasl.mechanism=SCRAM-SHA-512 \
+--producer-property sasl.jaas.config="org.apache.kafka.common.security.scram.ScramLoginModule required username=<USERNAME> password=<USERPASSWORD>;" \
+--producer-property ssl.enabled.protocols=TLSv1.2,TLSv1.1,TLSv1 \
+--topic <TOPIC_NAME>
+```
