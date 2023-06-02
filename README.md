@@ -106,6 +106,8 @@ sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule require
 5. Testing with the kafka cli
 ```shell
 ./kafka-console-consumer.sh --bootstrap-server <BOOTSTRAP_SERVER_URL>:443 --topic <TOPIC_NAME> --property print.timestamp=true --property print.key=true --consumer.config client.properties
+./kafka-console-consumer.sh --bootstrap-server <BOOTSTRAP_SERVER_URL>:443 --topic product-topic --property print.timestamp=true --property print.key=true --consumer.config client.properties --from-beginning
+CreateTime:1685677759829	null	SAMPLE
 ```
 
 Other example is using the cli directly with the properties
