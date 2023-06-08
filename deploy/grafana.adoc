@@ -1,0 +1,30 @@
+# Setting up the monitoring stack
+## 1 - Enabling user-workload-monitoring
+If the cluster-monitoring-config already exists, you just need to update it
+```shell
+oc -n openshift-monitoring edit configmap cluster-monitoring-config
+```
+If it doesn't exist, you must create it.
+```shell
+cat <<EOF |oc apply -f -  
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-monitoring-config
+  namespace: openshift-monitoring
+data:
+  config.yaml: |
+    enableUserWorkload: true
+EOF
+```
+## 2 - You can create a grafana namespace or use the same of amq-streams and you can install using the operator or deployment, below you have the both options
+*In this case we are using a new namespace that was called grafana.*
+Using the operator
+1. Creating the PVC
+```shell
+oc apply -f kuberesources/grafana-pvc.yaml
+```
+2. Creating grafana
+```shell
+oc apply -f kuberesources/grafana.yaml
+```
