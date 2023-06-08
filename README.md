@@ -122,3 +122,5 @@ bin/kafka-console-producer.sh \
 --producer-property ssl.enabled.protocols=TLSv1.2,TLSv1.1,TLSv1 \
 --topic <TOPIC_NAME>
 ```
+
+## If you wanna install the grafana, follow the these steps [Grafana Install](https://github.com/rafamqrs/amq-streams-utils/blob/main/deploy/grafana.adoc)
