@@ -7,7 +7,7 @@ oc apply -f machineset.yaml
 oc describe node <node-name> | grep -i taint
 ```
 
-## 2 - Create a namespace com o node selector and defaultTolerations, we are adding the default tolerations due to the amqstreams operator, it'll be installed on the amq-streams namespace and nodes were set with taint.
+## 2 - Create a namespace with node selector and defaultTolerations, also we are adding the default tolerations due to the amqstreams operator, it'll be installed on the amq-streams namespace and nodes were set with taint.
 ```yaml
 kind: Namespace
 apiVersion: v1
