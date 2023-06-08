@@ -1,0 +1,86 @@
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  annotations:
+    machine.openshift.io/GPU: '0'
+    machine.openshift.io/memoryMb: '43008'
+    machine.openshift.io/vCPU: '16'
+  resourceVersion: '94323'
+  name: cluster-fwvnf-gq5qp-worker-us-east-2b
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: cluster-fwvnf-gq5qp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: cluster-fwvnf-gq5qp
+      machine.openshift.io/cluster-api-machineset: cluster-fwvnf-gq5qp-worker-us-east-2b
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: cluster-fwvnf-gq5qp
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: cluster-fwvnf-gq5qp-worker-us-east-2b
+    spec:
+      lifecycleHooks: {}
+      metadata:
+        labels:
+          env: infra-amqstreams
+      providerSpec:
+        value:
+          userDataSecret:
+            name: worker-user-data
+          placement:
+            availabilityZone: us-east-2b
+            region: us-east-2
+          credentialsSecret:
+            name: aws-cloud-credentials
+          instanceType: c5n.4xlarge
+          metadata:
+            creationTimestamp: null
+          blockDevices:
+            - ebs:
+                encrypted: true
+                iops: 0
+                kmsKey:
+                  arn: ''
+                volumeSize: 100
+                volumeType: gp2
+          securityGroups:
+            - filters:
+                - name: 'tag:Name'
+                  values:
+                    - cluster-fwvnf-gq5qp-worker-sg
+          kind: AWSMachineProviderConfig
+          tags:
+            - name: kubernetes.io/cluster/cluster-fwvnf-gq5qp
+              value: owned
+            - name: Stack
+              value: project ocp4-cluster-fwvnf
+            - name: env_type
+              value: ocp4-cluster
+            - name: guid
+              value: fwvnf
+            - name: owner
+              value: unknown
+            - name: platform
+              value: labs
+            - name: uuid
+              value: 6ee6ac0e-3458-50dc-beba-45f6582b4160
+          deviceIndex: 0
+          ami:
+            id: ami-02c627a4f7f3cef78
+          subnet:
+            filters:
+              - name: 'tag:Name'
+                values:
+                  - cluster-fwvnf-gq5qp-private-us-east-2b
+          apiVersion: awsproviderconfig.openshift.io/v1beta1
+          iamInstanceProfile:
+            id: cluster-fwvnf-gq5qp-worker-profile
+      taints:
+        - effect: NoSchedule
+          key: reserved
+          value: amqstreams
