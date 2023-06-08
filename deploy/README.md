@@ -1,4 +1,4 @@
-## 1 - Create a MachineSet with label and taint
+### 1 - Create a MachineSet with label and taint
 ```shell
 oc apply -f machineset.yaml
 ```
@@ -7,7 +7,7 @@ oc apply -f machineset.yaml
 oc describe node <node-name> | grep -i taint
 ```
 
-## 2 - Create a namespace with node selector and defaultTolerations, also we are adding the default tolerations due to the amqstreams operator, it'll be installed on the amq-streams namespace and nodes were set with taint.
+### 2 - Create a namespace with node selector and defaultTolerations, also we are adding the default tolerations due to the amqstreams operator, it'll be installed on the amq-streams namespace and nodes were set with taint.
 ```yaml
 kind: Namespace
 apiVersion: v1
@@ -24,17 +24,17 @@ spec:
   finalizers:
     - kubernetes
 ```
-## 3 - Install the AMQ Streams Operator via Operator Hub
+### 3 - Install the AMQ Streams Operator via Operator Hub
 
-## 4 - Create the a two configmaps to export the metrics from the JMX(Zookeeper and Broker)
+### 4 - Create the a two configmaps to export the metrics from the JMX(Zookeeper and Broker)
 ```shell
 oc apply -f kuberesources/kafka-metrics.yaml
 ```
-## 5 - Create the broker with a super-admin, tls and scram-sha auth. 
+### 5 - Create the broker with a super-admin, tls and scram-sha auth. 
 ```shell
 oc apply -f kuberesources/kafka.yaml
 ```
-## 6 - Check if all pods were deployed.
+### 6 - Check if all pods were deployed.
 ```shell
 oc get pods -w 
 amq-streams-cluster-operator-v2.4.0-0-64f5f6b9c6-kqf98   1/1     Running   0          24m
