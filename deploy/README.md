@@ -28,7 +28,7 @@ spec:
 
 ## 4 - Create the a two configmaps to export the metrics from the JMX(Zookeeper and Broker)
 ```shell
-oc apply -f kuberesources/kafka-metrics-configmap.yaml
+oc apply -f kuberesources/kafka-metrics.yaml
 ```
 ## 5 - Create the broker with a super-admin, tls and scram-sha auth. 
 ```shell
