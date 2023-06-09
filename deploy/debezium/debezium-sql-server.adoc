@@ -27,7 +27,7 @@ kind: KafkaTopic
 metadata:
   name: connect-cluster-configs
   labels:
-    strimzi.io/cluster: sema
+    strimzi.io/cluster: kafka-cluster
   namespace: amq-streams
 spec:
   config:
@@ -42,8 +42,8 @@ kind: KafkaTopic
 metadata:
   name: connect-cluster-offsets
   labels:
-    strimzi.io/cluster: sema
-  namespace: infra-amqstreams-dev
+    strimzi.io/cluster: kafka-cluster
+  namespace: amq-streams
 spec:
   config:
     retention.ms: 604800000
@@ -58,8 +58,8 @@ kind: KafkaTopic
 metadata:
   name: connect-cluster-status
   labels:
-    strimzi.io/cluster: sema
-  namespace: infra-amqstreams-dev
+    strimzi.io/cluster: kafka-cluster
+  namespace: amq-streams
 spec:
   config:
     retention.ms: 604800000
