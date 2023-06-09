@@ -61,6 +61,11 @@ spec:
   name: prometheus-grafanadatasource.yaml
 ```
 6. Creating the PodMonitor.
+```yaml
+  namespaceSelector:
+    matchNames:
+      - <REPLACE_WITH_NAMESPACE_NAME>
+```
 ```shell
-
+oc apply kuberesources/pod-monitor.yaml
 ```
