@@ -20,23 +20,23 @@ EOF
 ## 2 - You can create a grafana namespace or use the same of amq-streams and you can install using the operator or deployment, below you have the both options
 *In this case we are using a new namespace that was called grafana.*
 Using the operator
-1. Creating the PVC
+== Creating the PVC
 ```shell
 oc apply -f kuberesources/grafana-pvc.yaml
 ```
-2. Creating grafana
+== Creating grafana
 ```shell
 oc apply -f kuberesources/grafana.yaml
 ```
-3. Grating the cluster-monitoring-view cluster role to grafana-serviceaccount.
+= Grating the cluster-monitoring-view cluster role to grafana-serviceaccount.
 ```shell
 oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-serviceaccount
 ```
-4. Using the bearer token to authenticate access to Prometheus.
+== Using the bearer token to authenticate access to Prometheus.
 ```shell
 BEARER_TOKEN=$(oc serviceaccounts get-token grafana-serviceaccount -n grafana)
 ```
-5. Creating Grafana Data Source.
+== Creating Grafana Data Source.
 #Replace the ${BEARER_TOKEN} with the extracted in the step 4.
 ```yaml
 apiVersion: integreatly.org/v1alpha1
@@ -60,7 +60,7 @@ spec:
       url: 'https://thanos-querier.openshift-monitoring.svc.cluster.local:9091'
   name: prometheus-grafanadatasource.yaml
 ```
-6. Creating the PodMonitor.
+== Creating the PodMonitor.
 ```yaml
   namespaceSelector:
     matchNames:
@@ -69,4 +69,4 @@ spec:
 ```shell
 oc apply kuberesources/pod-monitor.yaml
 ```
-7. Import the dashboard into grafana, you only need to copy content from files kuberesources/strimzi-dashboard and import through the grafana interface.
+== Import the dashboard into grafana, you only need to copy content from files kuberesources/strimzi-dashboard and import through the grafana interface.
