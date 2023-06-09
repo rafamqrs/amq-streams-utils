@@ -15,7 +15,57 @@ sh-4.4# podman login -u kubeadmin -p $(oc whoami -t) image-registry.openshift-im
 sh-4.4# podman pull 
 sh-4.4# podman login registry.redhat.io 
 sh-4.4# podman pull amq7/amq-streams-kafka-33-rhel8:2.4.0-5
-sh-4.4# podman tag amq7/amq-streams-kafka-31-rhel8 image-registry.openshift-image-registry.svc:5000/infra-amqstreams-dev/connect-cluster 
-sh-4.4# podman tag amq7/amq-streams-kafka-31-rhel8 image-registry.openshift-image-registry.svc:5000/infra-amqstreams-dev/connect-cluster
-
+sh-4.4# podman tag amq7/amq-streams-kafka-31-rhel8 image-registry.openshift-image-registry.svc:5000/amq-streams/connect-cluster 
+sh-4.4# podman tag amq7/amq-streams-kafka-31-rhel8 image-registry.openshift-image-registry.svc:5000/amq-streams/connect-cluster
+sh-4.4# podman push --remove-signatures image-registry.openshift-image-registry.svc:5000/amq-streams/connect-cluster
 ```
+
+Now we need to create the topics that will be used to store and manager the Kafka Workers from the KafkaConnect.
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: connect-cluster-configs
+  labels:
+    strimzi.io/cluster: sema
+  namespace: amq-streams
+spec:
+  config:
+    retention.ms: 604800000
+    segment.bytes: 1073741824
+    cleanup.policy: compact
+  partitions: 1
+  replicas: 3
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: connect-cluster-offsets
+  labels:
+    strimzi.io/cluster: sema
+  namespace: infra-amqstreams-dev
+spec:
+  config:
+    retention.ms: 604800000
+    segment.bytes: 1073741824
+    cleanup.policy: compact
+  partitions: 50
+  replicas: 3
+
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: connect-cluster-status
+  labels:
+    strimzi.io/cluster: sema
+  namespace: infra-amqstreams-dev
+spec:
+  config:
+    retention.ms: 604800000
+    segment.bytes: 1073741824
+    cleanup.policy: compact
+  partitions: 10
+  replicas: 1
+```
+
