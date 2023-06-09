@@ -47,3 +47,4 @@ kafka-cluster-zookeeper-0                                1/1     Running   0    
 kafka-cluster-zookeeper-1                                1/1     Running   0          6m31s
 kafka-cluster-zookeeper-2                                1/1     Running   0          6m31s
 ```
+## If you wanna install the grafana, follow the these steps [Grafana Install](https://github.com/rafamqrs/amq-streams-utils/blob/main/deploy/grafana.adoc)
