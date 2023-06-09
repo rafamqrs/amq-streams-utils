@@ -28,3 +28,39 @@ oc apply -f kuberesources/grafana-pvc.yaml
 ```shell
 oc apply -f kuberesources/grafana.yaml
 ```
+3. Grating the cluster-monitoring-view cluster role to grafana-serviceaccount.
+```shell
+oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-serviceaccount
+```
+4. Using the bearer token to authenticate access to Prometheus.
+```shell
+BEARER_TOKEN=$(oc serviceaccounts get-token grafana-serviceaccount -n grafana)
+```
+5. Creating Grafana Data Source.
+#Replace the ${BEARER_TOKEN} with the extracted in the step 4.
+```yaml
+apiVersion: integreatly.org/v1alpha1
+kind: GrafanaDataSource
+metadata:
+  name: prometheus-grafanadatasource
+  namespace: grafana
+spec:
+  datasources:
+    - access: proxy
+      editable: true
+      isDefault: true
+      jsonData:
+        httpHeaderName1: 'Authorization'
+        timeInterval: 5s
+        tlsSkipVerify: true
+      name: Prometheus
+      secureJsonData:
+        httpHeaderValue1: 'Bearer ${BEARER_TOKEN}'
+      type: prometheus
+      url: 'https://thanos-querier.openshift-monitoring.svc.cluster.local:9091'
+  name: prometheus-grafanadatasource.yaml
+```
+6. Creating the PodMonitor.
+```shell
+
+```
