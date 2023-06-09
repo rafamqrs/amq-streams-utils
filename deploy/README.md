@@ -48,3 +48,6 @@ kafka-cluster-zookeeper-1                                1/1     Running   0    
 kafka-cluster-zookeeper-2                                1/1     Running   0          6m31s
 ```
 ## If you wanna install the grafana, follow these steps [Grafana Install](https://github.com/rafamqrs/amq-streams-utils/blob/main/deploy/grafana.adoc)
+
+## If you wanna install the Debezium, follow these steps [Debezium SQL_SERVER](https://github.com/rafamqrs/amq-streams-utils/blob/main/deploy/debezium/debezium-sql-server.adoc)
+
