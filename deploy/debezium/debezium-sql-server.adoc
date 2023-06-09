@@ -1,1 +1,21 @@
+# This tutorial aims to teach you how to set up the debezium with sql server.
 
+# PRE-REQS
+You must import the AMQ Streams Kafka Image, please always check the right version https://catalog.redhat.com/software/containers/amq7/amq-streams-kafka-33-rhel8/637e0ea240d971f5448e6a0f[AMQ Streams 3.3.1]
+```shell
+oc import-image amq7/amq-streams-kafka-33-rhel8:2.4.0-5 --from=registry.redhat.io/amq7/amq-streams-kafka-33-rhel8:2.4.0-5 --confirm
+```
+If you cluster doesn't have access, you can use a traditional way, using the pull and push, let's take a look in an example:
+```shell
+$ oc get nodes
+$ oc debug nodes/<node_name>
+sh-4.4# chroot /host
+sh-4.4# oc login -u <username> --server=<API_URL>:6443
+sh-4.4# podman login -u kubeadmin -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000
+sh-4.4# podman pull 
+sh-4.4# podman login registry.redhat.io 
+sh-4.4# podman pull amq7/amq-streams-kafka-33-rhel8:2.4.0-5
+sh-4.4# podman tag amq7/amq-streams-kafka-31-rhel8 image-registry.openshift-image-registry.svc:5000/infra-amqstreams-dev/connect-cluster 
+sh-4.4# podman tag amq7/amq-streams-kafka-31-rhel8 image-registry.openshift-image-registry.svc:5000/infra-amqstreams-dev/connect-cluster
+
+```
