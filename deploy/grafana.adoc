@@ -69,3 +69,4 @@ spec:
 ```shell
 oc apply kuberesources/pod-monitor.yaml
 ```
+7. Import the dashboard into grafana, you only need to copy content from files kuberesources/strimzi-dashboard and import through the grafana interface.
