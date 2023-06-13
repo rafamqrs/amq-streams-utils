@@ -35,6 +35,25 @@ spec:
     type: scram-sha-512
 ```
 
+
+Let's create a topic that will be use by debezium.
+```yaml
+kind: KafkaTopic
+metadata:
+  labels:
+    strimzi.io/cluster: kafka-cluster
+  name: application-audit
+  namespace: amq-streams
+spec:
+  partitions: 3
+  replicas: 3
+  config:
+    min.insync.replicas: 2
+    retention.ms: 604800000
+    segment.bytes: 1073741824
+```
+
+
 Now we need to create the topics that will be used to store and manager the Kafka Workers from the KafkaConnect.
 ```yaml
 apiVersion: kafka.strimzi.io/v1beta2
