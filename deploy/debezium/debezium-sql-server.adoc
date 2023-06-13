@@ -55,9 +55,10 @@ spec:
 
 
 Now we need to create the topics that will be used to store and manager the Kafka Workers from the KafkaConnect. You can change the name if you want then you just need to use the new name in kafkaconnect properties:
-    offset.storage.topic: my-connect-cluster-offsets (1)
-    config.storage.topic: my-connect-cluster-configs (2)
-    status.storage.topic: my-connect-cluster-status  (3)
+
+* offset.storage.topic: my-connect-cluster-offsets (1)
+* config.storage.topic: my-connect-cluster-configs (2)
+* status.storage.topic: my-connect-cluster-status  (3)
 
 1. Kafka topic that stores connector offsets.
 2. Kafka topic that stores connector and task status configurations.
