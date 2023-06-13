@@ -20,6 +20,21 @@ sh-4.4# podman tag amq7/amq-streams-kafka-31-rhel8 image-registry.openshift-imag
 sh-4.4# podman push --remove-signatures image-registry.openshift-image-registry.svc:5000/amq-streams/connect-cluster
 ```
 
+If you are going to use the admin user, you need to create it
+
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: admin
+  labels:
+    strimzi.io/cluster: sema
+  namespace: infra-amqstreams-dev
+spec:
+  authentication:
+    type: scram-sha-512
+```
+
 Now we need to create the topics that will be used to store and manager the Kafka Workers from the KafkaConnect.
 ```yaml
 apiVersion: kafka.strimzi.io/v1beta2
