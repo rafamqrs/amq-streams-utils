@@ -28,8 +28,8 @@ kind: KafkaUser
 metadata:
   name: admin
   labels:
-    strimzi.io/cluster: sema
-  namespace: infra-amqstreams-dev
+    strimzi.io/cluster: kafka-cluster
+  namespace: amq-streams
 spec:
   authentication:
     type: scram-sha-512
@@ -113,11 +113,12 @@ spec:
 ```
 
 Optional, You can create a new user for the kafkaconnect or use the admin, you if wanna proceed with a new user if you must give the right permission.
+By default, the SQL Server connector writes events for all INSERT, UPDATE, and DELETE operations that occur in a table to a single Apache Kafka topic that is specific to that table. The connector uses the following convention to name change event topics: <topicPrefix>.<schemaName>.<tableName>
 ```yaml
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaUser
 metadata:
-  name: debezium-ser
+  name: debezium-mssql
   labels:
     strimzi.io/cluster: kafka-cluster
   namespace: amq-streams
@@ -126,126 +127,76 @@ spec:
     type: scram-sha-512
   authorization:
     acls:
-      - resource:
-          type: topic
-          name: application-audit
-          patternType: literal
-        operation: Read
-        host: '*'
-      - resource:
-          type: topic
-          name: application-audit
-          patternType: literal
-        operation: Describe
-        host: '*'
-      - resource:
-          type: group
-          name: '*'
-          patternType: literal
-        operation: Read
-        host: '*'
-      - resource:
-          type: topic
-          name: application-audit
-          patternType: literal
-        operation: Write
-        host: '*'
-      - resource:
-          type: topic
-          name: application-audit
-          patternType: literal
-        operation: Create
-        host: '*'
-      - resource:
-          type: topic
-          name: application-audit
-          patternType: literal
-        operation: Describe
-        host: '*'
-- host: '*'
-        operation: Describe
-        resource:
-          name: application-1-audit
-          patternType: literal
-          type: topic    
       - host: '*'
-        operation: Write
+        operations:
+          - Write
+          - Create
+          - Read
+          - Write
         resource:
           name: connect-cluster-offsets
           patternType: literal
           type: topic
       - host: '*'
-        operation: Create
-        resource:
-          name: connect-cluster-offsets
-          patternType: literal
-          type: topic
-      - host: '*'
-        operation: Describe
-        resource:
-          name: connect-cluster-offsets
-          patternType: literal
-          type: topic
-      - host: '*'
-        operation: Read
-        resource:
-          name: connect-cluster-offsets
-          patternType: literal
-          type: topic
-      - host: '*'
-        operation: Write
+        operations:
+          - Write
+          - Create
+          - Read
+          - Write
         resource:
           name: connect-cluster-status
           patternType: literal
           type: topic
       - host: '*'
-        operation: Create
-        resource:
-          name: connect-cluster-status
-          patternType: literal
-          type: topic
-      - host: '*'
-        operation: Describe
-        resource:
-          name: connect-cluster-status
-          patternType: literal
-          type: topic
-      - host: '*'
-        operation: Read
-        resource:
-          name: connect-cluster-status
-          patternType: literal
-          type: topic
-      - host: '*'
-        operation: Write
+        operations:
+          - Write
+          - Create
+          - Read
+          - Write
         resource:
           name: connect-cluster-configs
           patternType: literal
           type: topic
       - host: '*'
-        operation: Create
-        resource:
-          name: connect-cluster-configs
-          patternType: literal
-          type: topic
-      - host: '*'
-        operation: Describe
-        resource:
-          name: connect-cluster-configs
-          patternType: literal
-          type: topic
-      - host: '*'
-        operation: Read
-        resource:
-          name: connect-cluster-configs
-          patternType: literal
-          type: topic
-      - host: '*'
-        operation: Read
+        operations:
+          - Read
         resource:
           name: connect-cluster
           patternType: literal
           type: group
+
     type: simple
 ```
 
+Creating the KafkaConnect
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  annotations:
+    strimzi.io/use-connector-resources: 'true'
+  name: debezium-connect-sqlserver
+  namespace: amq-streams
+spec:
+  authentication:
+    passwordSecret:
+      password: password
+      secretName: user-debezium-mssql
+    type: scram-sha-512
+    username: debezium-mssql
+  bootstrapServers: 'kafka-cluster-kafka-bootstrap:9093'
+  config:
+    config.storage.replication.factor: -1
+    config.storage.topic: connect-cluster-configs
+    group.id: connect-cluster
+    offset.storage.replication.factor: -1
+    offset.storage.topic: connect-cluster-offsets
+    status.storage.replication.factor: -1
+    status.storage.topic: connect-cluster-status
+  replicas: 1
+  tls:
+    trustedCertificates:
+      - certificate: ca.crt
+        secretName: kafka-cluster-cluster-ca-cert
+  version: 3.3.1
+```
