@@ -185,6 +185,16 @@ spec:
     type: scram-sha-512
     username: debezium-mssql
   bootstrapServers: 'kafka-cluster-kafka-bootstrap:9093'
+  build:
+    output:
+      image: 'debezium-streams-connect:1.0'
+      type: imagestream
+    plugins:
+      - artifacts:
+          - type: zip
+            url: >-
+              https://maven.repository.redhat.com/ga/io/debezium/debezium-connector-sqlserver/2.1.4.Final-redhat-00001/debezium-connector-sqlserver-2.1.4.Final-redhat-00001-plugin.zip
+        name: debezium-connector-sqlserver
   config:
     config.storage.replication.factor: -1
     config.storage.topic: connect-cluster-configs
