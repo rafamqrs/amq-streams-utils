@@ -46,11 +46,11 @@ spec:
       volumes:
         - deleteClaim: false
           id: 0
-          size: 50Gi
+          size: 100Gi
           type: persistent-claim
         - deleteClaim: false
           id: 1
-          size: 30Gi
+          size: 100Gi
           type: persistent-claim
       type: jbod
     listeners:
