@@ -5,6 +5,9 @@ You must import the AMQ Streams Kafka Image, please always check the right versi
 ```shell
 oc import-image amq7/amq-streams-kafka-33-rhel8:2.4.0-5 --from=registry.redhat.io/amq7/amq-streams-kafka-33-rhel8:2.4.0-5 --confirm
 ```
+```shell
+oc tag amq-streams-kafka-33-rhel8:2.4.0-5 debezium-streams-connect:1.0
+```
 If you cluster doesn't have access, you can use a traditional way, using the pull and push, let's take a look in an example:
 ```shell
 $ oc get nodes
