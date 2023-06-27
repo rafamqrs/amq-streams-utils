@@ -213,3 +213,36 @@ spec:
         secretName: kafka-cluster-cluster-ca-cert
   version: 3.3.1
 ```
+Creating topic that will be used by cdc, in my case the name of the table is tblAuthors.
+```shell
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  labels:
+    strimzi.io/cluster: kafka
+  name: sqlserver
+spec:
+  config:
+    min.insync.replicas: '3'
+    retention.ms: '604800000'
+    segment.bytes: '1073741824'
+  partitions: 3
+  replicas: 3
+  topicName: sqlserver
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  labels:
+    strimzi.io/cluster: kafka
+  name: sqlserver-tblAuthors
+spec:
+  config:
+    min.insync.replicas: '3'
+    retention.ms: '604800000'
+    segment.bytes: '1073741824'
+  partitions: 3
+  replicas: 3
+  topicName: sqlserver.dtb_enterprise.dbo.tblAuthors
+```
