@@ -236,7 +236,7 @@ kind: KafkaTopic
 metadata:
   labels:
     strimzi.io/cluster: kafka
-  name: sqlserver-tblAuthors
+  name: sqlserver-tblauthors
 spec:
   config:
     min.insync.replicas: '3'
