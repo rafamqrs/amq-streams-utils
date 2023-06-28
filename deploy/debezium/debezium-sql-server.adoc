@@ -77,11 +77,10 @@ metadata:
   namespace: amq-streams
 spec:
   config:
-    retention.ms: 604800000
-    segment.bytes: 1073741824
     cleanup.policy: compact
   partitions: 1
   replicas: 3
+  topicName: connect-cluster-configs
 ---
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
@@ -92,11 +91,10 @@ metadata:
   namespace: amq-streams
 spec:
   config:
-    retention.ms: 604800000
-    segment.bytes: 1073741824
     cleanup.policy: compact
-  partitions: 50
+  partitions: 25
   replicas: 3
+  topicName: connect-cluster-offsets
 
 ---
 apiVersion: kafka.strimzi.io/v1beta2
@@ -108,11 +106,10 @@ metadata:
   namespace: amq-streams
 spec:
   config:
-    retention.ms: 604800000
-    segment.bytes: 1073741824
     cleanup.policy: compact
-  partitions: 10
-  replicas: 1
+  partitions: 5
+  replicas: 3
+  topicName: connect-cluster-status
 ```
 
 Optional, You can create a new user for the kafkaconnect or use the admin, you if wanna proceed with a new user if you must give the right permission.
