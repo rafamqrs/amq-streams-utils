@@ -210,7 +210,66 @@ spec:
         secretName: kafka-cluster-cluster-ca-cert
   version: 3.3.1
 ```
-Creating topic that will be used by cdc, in my case the name of the table is tblAuthors.
+
+Before we create the KafkaConnector, let's prepare the Database.
+
+1 - Create the Login and User
+```sql
+--CREATE LOGIN debeziumLogin WITH PASSWORD = 'Sql2019isfast';
+--CREATE USER debezium FOR LOGIN debeziumLogin;
+```
+
+2 - Grant to the user the select on tblAuthors
+```sql
+--USE dtb_enterprise
+--GO
+--Grant select on tblAuthors to debezium
+```
+
+3 - Create Table tblAuthors 
+```sql
+--CREATE Table tblAuthors
+--(
+--   Id int identity primary key,
+--   Author_name nvarchar(50),
+--   country nvarchar(50)
+--)
+```
+
+4 - (Optional) you can insert some random datas
+```sql
+--Declare @Id int
+--Set @Id = 1
+--
+--While @Id <= 120000
+--Begin 
+--   Insert Into tblAuthors values ('Author - ' + CAST(@Id as nvarchar(10)),
+--              'Country - ' + CAST(@Id as nvarchar(10)) + ' name')
+--   Print @Id
+--   Set @Id = @Id + 1
+--End
+```
+
+5 - Enable CDC on SQL Server
+```sql
+--EXEC sys.sp_cdc_enable_db
+
+--Enabling CDC on the SQL Server database(https://debezium.io/documentation/reference/stable/connectors/sqlserver.html#_enabling_cdc_on_the_sql_server_database)
+--EXEC dtb_enterprise..sp_addsrvrolemember @loginame = N'debeziumLogin', @rolename = N'sysadmin'
+
+--Enabling CDC on a SQL Server table(https://debezium.io/documentation/reference/stable/connectors/sqlserver.html#_enabling_cdc_on_a_sql_server_table)
+--EXEC sys.sp_cdc_enable_table
+--@source_schema = N'dbo',
+--@source_name = N'tblAuthors', 
+--@role_name = N'NULL',  
+--@filegroup_name = N'PRIMARY',
+--@supports_net_changes = 0
+
+--Verifying that the user has access to the CDC table (https://debezium.io/documentation/reference/stable/connectors/sqlserver.html#_verifying_that_the_user_has_access_to_the_cdc_table)
+--EXEC sys.sp_cdc_help_change_data_capture
+```
+
+Creating topic that will be used by cdc, in my case the name of the table is tblAuthors, The connector uses the following convention to name change event topics: <topicPrefix>.<schemaName>.<tableName>.
 ```yaml
 ---
 apiVersion: kafka.strimzi.io/v1beta2
@@ -242,4 +301,46 @@ spec:
   partitions: 3
   replicas: 3
   topicName: sqlserver.dtb_enterprise.dbo.tblAuthors
+```
+
+Finally, we can create the KafkaConnector.
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  labels:
+    strimzi.io/cluster: debezium-connect-sqlserver
+  name: enterprise-connector-sqlserver
+  namespace: amq-streams
+spec:
+  class: io.debezium.connector.sqlserver.SqlServerConnector
+  config:
+    schema.history.internal.consumer.sasl.mechanism: SCRAM-SHA-512
+    table.include.list: dbo.tblAuthors
+    schema.history.internal.producer.sasl.mechanism: SCRAM-SHA-512
+    schema.history.internal.producer.ssl.truststore.location: /opt/kafka/connect-certs/kafka-cluster-cluster-ca-cert/ca.p12
+    database.hostname: <REPLACE>
+    schema.history.internal.consumer.ssl.type: PKCS12
+    schema.history.internal.consumer.ssl.truststore.location: /opt/kafka/connect-certs/kafka-cluster-cluster-ca-cert/ca.p12
+    schema.history.internal.producer.ssl.truststore.password: <REPLACE>
+    snapshot.mode: initial
+    schema.history.internal.producer.ssl.type: PKCS12
+    database.password: <REPLACE>
+    schema.history.internal.consumer.sasl.jaas.config: >-
+      org.apache.kafka.common.security.scram.ScramLoginModule required
+      username="admin" password="<REPLACE>";
+    schema.history.internal.consumer.ssl.truststore.password: <REPLACE>
+    topic.prefix: sqlserver
+    database.encrypt: false
+    schema.history.internal.producer.sasl.jaas.config: >-
+      org.apache.kafka.common.security.scram.ScramLoginModule required
+      username="admin" password="<REPLACE>";
+    database.port: 31433
+    schema.history.internal.producer.security.protocol: SASL_SSL
+    database.names: dtb_enterprise
+    schema.history.internal.consumer.security.protocol: SASL_SSL
+    schema.history.internal.kafka.topic: schemahistory.dtb_enterprise
+    database.user: debeziumLogin
+    schema.history.internal.kafka.bootstrap.servers: 'kafka-cluster-kafka-bootstrap:9093'
+  tasksMax: 1
 ```
