@@ -82,5 +82,5 @@ spec:
             id: cluster-fwvnf-gq5qp-worker-profile
       taints:
         - effect: NoSchedule
-          key: reserved
-          value: amqstreams
+          key: amqstreams
+          value: reserved
