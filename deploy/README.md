@@ -19,7 +19,7 @@ metadata:
     openshift.io/display-name: amqstreams
     openshift.io/node-selector: env=infra-amqstreams
     scheduler.alpha.kubernetes.io/defaultTolerations: >-
-      [{"operator": "Exists", "effect": "NoSchedule", "key":"reserved"}]
+      [{"operator": "Exists", "effect": "NoSchedule", "key":"amqstreams"}]
 spec:
   finalizers:
     - kubernetes
